@@ -20,11 +20,11 @@ class Test(models.Model):
 class Questions(models.Model):
     text = models.CharField
     answer = models.CharField
-    test = models.ForeignKey('Test', )
+    test = models.ForeignKey('Test', on_delete=models.PROTECT)
 
 
 class Anwers(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     text = models.CharField
     question_time = models.DateTimeField()
     answer_time = models.DateTimeField()
