@@ -1,3 +1,4 @@
+from time import time
 from datetime import datetime
 
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -6,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.shortcuts import render, get_object_or_404, redirect
 
 from clever.forms import AnswerForm
-from clever.models import Question, Test, Answer
+from clever.models import Question, Test, Answer, TestType
 
 
 def home(request):
@@ -71,11 +72,16 @@ def question(request, test_id, q_num):
     form = None
     errors = []
     quest = get_object_or_404(Question, test=test_id, number_in_test=q_num)
-    print(quest.id, request.user)
     answer_exists = Answer.objects.filter(question=quest, user=request.user,
                                           ).exclude(text__isnull=True
                                           ).exclude(text__exact='').exists()
     if not answer_exists:
+        test = Test.objects.get(pk=test_id)
+        test_config = TestType.objects.filter(name=test.type.name).first()
+
+        quest_time = 0
+        if test_config.question_time_sec != 0:
+            quest_time = test_config.question_time_sec
         answer = Answer.objects.create(
             user=request.user,
             question_time=datetime.utcnow(),
@@ -85,18 +91,24 @@ def question(request, test_id, q_num):
         form = AnswerForm(request.POST or None)
         if request.method == 'POST':
             if form.is_valid():
+                # TODO: form validate
                 # form.
                 form.save()
                 return redirect(question, test_id=test_id, q_num=q_num + 1)
     else:
         errors.append('Вы уже ответили на этот вопрос, ответ нельзя изменить')
 
+    time_left = 0
+    if test_config.test_time_sec != 0:
+        time_left = int(time()) - test_config.test_time_sec
+
     context = {
         'question': quest,
         'errors': errors,
         'form': form,
+        'time_left': time_left,
+        'quest_time': quest_time,
         'name': 'Вопрос №' + str(quest.number_in_test),
-        'test': test,
         'next_question_id': q_num + 1,
     }
     return render(request, 'question.html', context)
