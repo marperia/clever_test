@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+    <div class="col-md-4 col-md-offset-4">
+        <h2>Сменить пароль</h2>
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <p>{{ error }}</p>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <div class="input-group">
+                    <span class="input-group-addon">Текущий</span>
+                    <input type="password" id="{{ form.old_password.id_for_label }}" name="{{ form.old_password.html_name }}" required="" class="form-control" placeholder="{{ form.old_password.label }}" aria-describedby="basic-addon2">
+                </div>
+                {% if form.old_password.help_text %}
+                    <small style="color: grey">{{ form.old_password.help_text|safe }}</small>
+                {% endif %}
+            </p>
+
+            <p>
+                <div class="input-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;&nbsp;Новый</span>
+                    <input type="password" id="{{ form.new_password1.id_for_label }}" name="{{ form.new_password1.html_name }}" required="" class="form-control" placeholder="{{ form.new_password1.label }}" aria-describedby="basic-addon2">
+                </div>
+                {% if form.new_password1.help_text %}
+                    <small style="color: grey">{{ form.new_password1.help_text|safe }}</small>
+                {% endif %}
+            </p>
+            <p>
+                <div class="input-group">
+                    <span class="input-group-addon">Ещё раз</span>
+                    <input type="password" id="{{ form.new_password2.id_for_label }}" name="{{ form.new_password2.html_name }}" required="" class="form-control" placeholder="{{ form.new_password2.label }}" aria-describedby="basic-addon3">
+                </div>
+            </p>
+            <input type="submit" value="Сменить" class="btn btn-success">
+        </form>
+    </div>
+{% endblock %}

@@ -1,3 +1,12 @@
 from django.contrib import admin
 
-# Register your models here.
+from clever.models import Test, TestType, Question, Answer
+
+admin.site.register(
+    [
+        Test,
+        Answer,
+        Question,
+        TestType,
+    ]
+)

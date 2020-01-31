@@ -1,32 +1,33 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+
 class TestType(models.Model):
-    name = models.CharField
+    name = models.CharField(max_length=50)
+    question_time_sec = models.FloatField(null=True)
+    test_time_sec = models.FloatField(null=True)
     allow_backward = models.BooleanField(default=True)
-    question_time_sec = models.FloatField
-    test_time_sec = models.FloatField
-    show_questions = models.BooleanField
+    show_unanswered_questions = models.BooleanField(default=False)
     one_page_display = models.BooleanField(default=False)
 
 
 class Test(models.Model):
-    name = models.CharField
-    rules = models.TextField
+    name = models.CharField(max_length=50)
+    rules = models.TextField()
     type = models.ForeignKey('TestType', on_delete=models.CASCADE)
 
 
-class Questions(models.Model):
-    text = models.CharField
-    answer = models.CharField
+class Question(models.Model):
+    text = models.CharField(max_length=100)
+    number_in_test = models.IntegerField(default=1)
     test = models.ForeignKey('Test', on_delete=models.PROTECT)
 
 
-class Anwers(models.Model):
+class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    text = models.CharField
-    question_time = models.DateTimeField()
-    answer_time = models.DateTimeField()
-
-
+    text = models.CharField(max_length=50)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, null=True, blank=True)
+    question_time = models.DateTimeField(default=datetime.utcnow)
+    answer_time = models.DateTimeField(null=True)

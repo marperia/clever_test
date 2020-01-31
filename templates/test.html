@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-md-8 col-md-offset-2">
+        <h4>{{ test.name }}</h4>
+        <p>{{ test.rules }}</p>
+        <a class="btn btn-default" href="{% url 'question' test_id=test.id q_num=1 %}">Начать тест</a>
+    </div>
+{% endblock %}

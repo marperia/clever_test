@@ -120,3 +120,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+# ./manage.py collectstatic will collect all static files to the STATIC_ROOT for nginx serving
+# STATIC_ROOT = os.path.join(BASE_DIR, '/var/www/clever_test/static')
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGOUT_REDIRECT_URL = '/'
