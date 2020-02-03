@@ -71,6 +71,8 @@ def test(request, pk):
 def question(request, test_id, q_num):
     form = None
     errors = []
+    time_left = 0
+    quest_time = 0
     quest = get_object_or_404(Question, test=test_id, number_in_test=q_num)
     answer_exists = Answer.objects.filter(question=quest, user=request.user,
                                           ).exclude(text__isnull=True
@@ -79,28 +81,28 @@ def question(request, test_id, q_num):
         test = Test.objects.get(pk=test_id)
         test_config = TestType.objects.filter(name=test.type.name).first()
 
-        quest_time = 0
         if test_config.question_time_sec != 0:
             quest_time = test_config.question_time_sec
-        answer = Answer.objects.create(
+
+        if test_config.test_time_sec != 0:
+            time_left = int(time()) - test_config.test_time_sec
+
+        answer_tuple = Answer.objects.get_or_create(
             user=request.user,
-            question_time=datetime.utcnow(),
-            question=quest,
+            question_id=quest.id,
         )
-        answer.save()
+        answer = answer_tuple[0]
         form = AnswerForm(request.POST or None)
         if request.method == 'POST':
             if form.is_valid():
-                # TODO: form validate
-                # form.
-                form.save()
+                answer.answer_time = datetime.utcnow()
+                answer.text = request.POST['text']
+                answer.save()
                 return redirect(question, test_id=test_id, q_num=q_num + 1)
+        if not answer_tuple[1]:
+            answer.save()
     else:
         errors.append('Вы уже ответили на этот вопрос, ответ нельзя изменить')
-
-    time_left = 0
-    if test_config.test_time_sec != 0:
-        time_left = int(time()) - test_config.test_time_sec
 
     context = {
         'question': quest,
