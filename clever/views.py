@@ -85,7 +85,26 @@ def question(request, test_id, q_num):
             quest_time = test_config.question_time_sec
 
         if test_config.test_time_sec != 0:
-            time_left = int(time()) - test_config.test_time_sec
+            first_ans = Answer.objects.filter(user=request.user, question_id=quest.id).first()
+            if not first_ans:
+                time_left = int(time() - test_config.test_time_sec)
+            else:
+                print(first_ans, first_ans.question_time, type(first_ans.question_time))
+                time_left = int(first_ans.question_time + test_config.test_time_sec - time())
+
+            print(time_left)
+            if time_left <= 0:
+                errors.append('Время закончилось')
+                context = {
+                    'question': quest,
+                    'errors': errors,
+                    'form': form,
+                    'time_left': time_left,
+                    'quest_time': quest_time,
+                    'name': 'Вопрос №' + str(quest.number_in_test),
+                    'next_question_id': q_num + 1,
+                }
+                return render(request, 'question.html', context)
 
         answer_tuple = Answer.objects.get_or_create(
             user=request.user,

@@ -11,14 +11,14 @@
 
     {% if time_left != 0 %}
         <script>
-            var timer = document.getElementById('ovoshi');
-            var time_left = {{ time_left }};
-            window.setInterval(function () {
-                alert(typeof time_left);
-                alert('time - 1000 ' + toString(time_left - 1000));
-                time_left = time_left - 1000;
-                timer.innerText = time_left;
-                alert(time_left);
+            let countdown = document.querySelector('#ovoshi');
+            let timeLeft = {{ time_left }};
+
+            setInterval(() => {
+                let date = new Date(null);
+                date.setSeconds(timeLeft);
+                countdown.innerText = date.toISOString().substr(11, 8);
+                timeLeft -= 1;
             }, 1000)
         </script>
     {% endif %}
@@ -35,11 +35,13 @@
         {% if time_left != 0 %}
             <div id="ovoshi"></div>
         {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <p>{{ form.text }}</p>
-            <p><input type="submit" class="btn btn-success" value="Отправить"></p>
-        </form>
+        {% if form %}
+            <form method="post">
+                {% csrf_token %}
+                <p>{{ form.text }}</p>
+                <p><input type="submit" class="btn btn-success" value="Отправить"></p>
+            </form>
+        {% endif %}
         <a class="btn btn-primary" href="{% url 'question' test_id=question.test_id q_num=next_question_id %}">Дальше »</a>
     </div>
 {% endblock %}
