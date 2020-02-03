@@ -24,6 +24,9 @@ class Question(models.Model):
     number_in_test = models.IntegerField(default=1)
     test = models.ForeignKey('Test', on_delete=models.PROTECT)
 
+    def __str__(self):
+        return str(self.number_in_test) + ', ' + str(self.test_id)
+
 
 class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
